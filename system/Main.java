@@ -65,7 +65,7 @@ public class Main {
         System.out.println("Enter maximum price:");
         double maxPrice = scanner.nextDouble();
         scanner.nextLine(); // consume the leftover newline
-        System.out.println("Enter required facilities (e.g., 3 bedrooms):");
+        System.out.println("Property type:");
         String facilities = scanner.nextLine();
         System.out.println("Enter project name:");
         String projectName = scanner.nextLine();
