@@ -1,5 +1,3 @@
 SizeSqM,SqFt,PropertyType,NoOfFloors,Address,Scheme,Price,Year,PricePerSqft
-120,1290,Condominium,5,123 Maple St,Maple Residences,350000,2021,271.32
-120,1390,Condominium,5,123 Maple St,Maple Residences,400000,2021,271.32
-150,1610,Apartment,8,456 Oak Ave,Oak Towers,450000,2020,279.50
-100,1080,Townhouse,3,789 Pine Rd,Pine Court,300000,2019,277.78
+150,1610,Apartment,8,456 Oak Ave,Oak Towers,450000.0,2020,279.5
+100,1080,Townhouse,3,789 Pine Rd,Pine Court,300000.0,2019,277.78

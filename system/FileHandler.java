@@ -94,4 +94,39 @@ public class FileHandler {
     
         return transactions;
     }
-      }
+    
+    public void updatePropertiesFile(List<Property> properties) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            // Write the header first
+            bw.write("SizeSqM,SqFt,PropertyType,NoOfFloors,Address,Scheme,Price,Year,PricePerSqft");
+            bw.newLine();
+    
+            // Write each property
+            for (Property property : properties) {
+                String line = property.getSizeSqM() + "," + property.getSqFt() + "," + property.getPropertyType() + ","
+                        + property.getNoOfFloors() + "," + property.getAddress() + "," + property.getScheme() + ","
+                        + property.getPrice() + "," + property.getYear() + "," + property.getPricePerSqft();
+                bw.write(line);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public String getFilePath() {
+        return FILE_PATH;
+    }
+    public void writeTransaction(Transaction transaction) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(TRANSACTION_FILE_PATH, true))) {
+            String line = transaction.getTransactionDate() + "\t" +
+                          transaction.getTransactionSqFt() + "\t" +
+                          transaction.getProjectName() + "\t" +
+                          transaction.getTransactionPrice();
+            bw.write(line);
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+}
