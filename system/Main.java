@@ -70,31 +70,37 @@ public class Main {
         System.out.println("Enter maximum price:");
         double maxPrice = scanner.nextDouble();
         scanner.nextLine(); // consume the leftover newline
+    
         System.out.println("Property type:");
-        String facilities = scanner.nextLine();
+        String facilities = scanner.nextLine().trim(); // Added trim to clean up input
         System.out.println("Enter project name:");
-        String projectName = scanner.nextLine();
-
+        String projectName = scanner.nextLine().trim(); // Added trim to clean up input
+    
+        // Log search criteria for debugging
+        System.out.println("Searching with criteria:");
+        System.out.println("Min SqFt: " + minSqFt + ", Max SqFt: " + maxSqFt);
+        System.out.println("Min Price: $" + minPrice + ", Max Price: $" + maxPrice);
+        System.out.println("Property Type: " + facilities + ", Project Name: " + projectName);
+    
         List<Property> results = project.searchProperties(minSqFt, maxSqFt, minPrice, maxPrice, facilities, projectName);
-
+    
         if (results.isEmpty()) {
             System.out.println("No properties found that match your criteria.");
-        } else {
+        } else  {
             System.out.println("Matching properties:");
-            for (int i = 0; i < results.size(); i++) {
-                System.out.println("ID: " + (i + 1));
-                results.get(i).displayPropertyDetails();
+            for (Property prop : results) {
+                prop.displayPropertyDetails();
                 System.out.println("-------------------");
             }
-
+    
             System.out.println("Enter the ID of the property you want to buy, or 0 to return to the main menu:");
             int propertyId = scanner.nextInt();
             scanner.nextLine(); // Consume the newline
-
+    
             if (propertyId == 0) {
                 return; // Return to the main menu
             }
-
+    
             if (propertyId > 0 && propertyId <= results.size()) {
                 buyProperty(scanner, project, results.get(propertyId - 1));
             } else {
@@ -102,7 +108,7 @@ public class Main {
             }
         }
     }
-
+    
     // Method to add a new property
     private static void addNewProperty(Scanner scanner, Project project, FileHandler fileHandler) {
         System.out.println("Enter property size in square meters:");
@@ -134,8 +140,7 @@ public class Main {
         double pricePerSqft = scanner.nextDouble();
         scanner.nextLine(); // Consume the newline
 
-        // Create a new Property object
-        Property newProperty = new Property(sizeSqM, sqFt, propertyType, noOfFloors, address, scheme, price, year, pricePerSqft);
+        Property newProperty = new Property( sizeSqM, sqFt, propertyType, noOfFloors, address, scheme, price, year, pricePerSqft);
 
         // Add the new property to the project
         project.addProperty(newProperty);
@@ -149,33 +154,31 @@ public class Main {
     // Method to show the last 5 transactions for a selected project
     private static void showLast5Transactions(Scanner scanner, FileHandler fileHandler) {
         System.out.println("Enter the project name to show the last 5 transactions:");
-        String projectName = scanner.nextLine().trim();  // Ensure trimming any extra spaces
-
+        String projectName = scanner.nextLine().trim(); // Ensure trimming any extra spaces
+    
         List<Transaction> allTransactions = fileHandler.readTransactions();
-
-        System.out.println("Looking for transactions for project named: '" + projectName + "'");
-
-        // Filter transactions by project name
         List<Transaction> projectTransactions = new ArrayList<>();
+    
+        // Filter transactions by project name
         for (Transaction transaction : allTransactions) {
-            System.out.println("Transaction Project Name: '" + transaction.getProjectName().trim() + "'");
-            if (transaction.getProjectName().trim().equalsIgnoreCase(projectName)) {
+            if (transaction.getProjectName().equalsIgnoreCase(projectName)) {
                 projectTransactions.add(transaction);
             }
         }
-
+    
         int transactionCount = projectTransactions.size();
         if (transactionCount == 0) {
             System.out.println("No transactions found for the project: " + projectName);
         } else {
             System.out.println("Last 5 transactions for project: " + projectName);
-            // Show the last 5 transactions (or fewer if there are less than 5)
+            // Show only the last 5 transactions
             for (int i = Math.max(transactionCount - 5, 0); i < transactionCount; i++) {
                 projectTransactions.get(i).displayTransactionDetails();
+                System.out.println("----------------------------------");
             }
         }
     }
-
+    
     private static void buyProperty(Scanner scanner, Project project, Property selectedProperty) {
         System.out.println("Are you sure you want to buy this property?");
         selectedProperty.displayPropertyDetails();
@@ -187,15 +190,34 @@ public class Main {
             project.getProperties().remove(selectedProperty);
             System.out.println("You have successfully bought the property at: " + selectedProperty.getAddress());
     
+            // Get the current date for the valuation
+            String valuationDate = java.time.LocalDate.now().toString(); // Current date in YYYY-MM-DD format
+    
+            // Create a transaction record
+            Transaction transaction = new Transaction(
+                selectedProperty.getScheme(), // projectName
+                valuationDate, // transactionDate
+                selectedProperty.getPrice(), // transactionPrice
+                selectedProperty.getSqFt(), // transactionSqFt
+                selectedProperty.getSizeSqM(), // sizeSqM
+                selectedProperty.getPropertyType(), // propertyType
+                selectedProperty.getNoOfFloors(), // noOfFloors
+                selectedProperty.getAddress(), // address
+                selectedProperty.getScheme(), // scheme
+                selectedProperty.getYear(), // year
+                selectedProperty.getPricePerSqft() // pricePerSqft
+            );
+    
+            try {
+                new FileHandler().writeTransaction(transaction);
+                System.out.println("Transaction recorded successfully.");
+            } catch (Exception e) {
+                System.out.println("Failed to record transaction: " + e.getMessage());
+            }
+    
             // Update the properties file to remove the sold property
             updatePropertiesFile(new FileHandler(), project.getProperties());
             System.out.println("The property has been removed from the available list.");
-    
-            // Create and write a transaction record
-            String transactionDate = java.time.LocalDate.now().toString(); // Current date
-            Transaction transaction = new Transaction(selectedProperty.getScheme(), transactionDate, selectedProperty.getPrice(), selectedProperty.getSqFt());
-            new FileHandler().writeTransaction(transaction);
-            System.out.println("Transaction recorded successfully.");
         } else {
             System.out.println("Purchase cancelled. Returning to the main menu.");
         }
