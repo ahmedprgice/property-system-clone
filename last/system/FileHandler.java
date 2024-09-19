@@ -11,38 +11,43 @@ public class FileHandler {
     // Read properties from a file
     public List<Property> readProperties() {
         List<Property> properties = new ArrayList<>();
-
+    
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             br.readLine(); // Skip the header
             while ((line = br.readLine()) != null) {
-                String[] details = line.split("\t");
-
-                // Ensure correct number of details
-                if (details.length < 9) { // Update to expect 9 fields
-                    System.out.println("Skipping improperly formatted line: ");
+                String[] details = line.split(","); // Assuming the data is comma-separated
+    
+                // Ensure correct number of details (9 fields expected)
+                if (details.length < 9) {
+                    System.out.println("Skipping improperly formatted line: " + line);
                     continue; // Skip this line
                 }
-
-                int sizeSqM = Integer.parseInt(details[0].trim());
-                int sqFt = Integer.parseInt(details[1].trim());
-                String propertyType = details[2].trim();
-                int noOfFloors = Integer.parseInt(details[3].trim());
-                String address = details[4].trim();
-                String scheme = details[5].trim();
-                double price = Double.parseDouble(details[6].trim());
-                int year = Integer.parseInt(details[7].trim());
-                double pricePerSqft = Double.parseDouble(details[8].trim());
-
-                Property property = new Property(sizeSqM, sqFt, propertyType, noOfFloors, address, scheme, price, year, pricePerSqft);
-                properties.add(property);
+    
+                try {
+                    int sizeSqM = Integer.parseInt(details[0].trim());
+                    int sqFt = Integer.parseInt(details[1].trim());
+                    String propertyType = details[2].trim();
+                    int noOfFloors = Integer.parseInt(details[3].trim());
+                    String address = details[4].trim();
+                    String scheme = details[5].trim();
+                    double price = Double.parseDouble(details[6].trim());
+                    int year = Integer.parseInt(details[7].trim());
+                    double pricePerSqft = Double.parseDouble(details[8].trim());
+    
+                    Property property = new Property(sizeSqM, sqFt, propertyType, noOfFloors, address, scheme, price, year, pricePerSqft);
+                    properties.add(property);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing line: " + line + ". Error: " + e.getMessage());
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    
         return properties;
     }
-
+    
     // Write a property to a file
     public void writeProperty(Property property) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_PATH, true))) {

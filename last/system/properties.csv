@@ -1,1 +1,2 @@
-SizeSqM,SqFt,PropertyType,NoOfFloors,Address,Scheme,Price,Year,PricePerSqft
+DateOfValuation	SizeSqM	SqFt	PropertyType	NoOfFloors	Address	Scheme	Price	Year	PricePerSqft
+200	1500	Condominium	10	456 Oak St	Project B	350000.0	2019	233.33

@@ -3,7 +3,7 @@ public class Transaction {
     private String transactionDate;
     private double transactionPrice;
     private int transactionSqFt;
-    private int sizeSqM;            // New fields
+    private int sizeSqM;
     private String propertyType;
     private int noOfFloors;
     private String address;
@@ -11,7 +11,6 @@ public class Transaction {
     private int year;
     private double pricePerSqft;
 
-    // Updated constructor
     public Transaction(String projectName, String transactionDate, double transactionPrice, int transactionSqFt,
                        int sizeSqM, String propertyType, int noOfFloors, String address, String scheme, int year, double pricePerSqft) {
         this.projectName = projectName;
